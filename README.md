@@ -1,41 +1,50 @@
-# Franchi Pedidos — Demonstração pública
+# FRANCHI PEDIDOS · VERSÃO 2
 
-**Franchi Creative — Protótipo 1.0**
+Site HTML/CSS/JS com banco Supabase real para catálogo, checkout, painel de loja e administração. Adaptado para publicação via Netlify e edição no celular.
 
-Este repositório contém **uma demonstração interativa**, NÃO é um sistema comercial de gestão de pedidos. O arquivo `index.html` tem HTML, CSS, JavaScript e logo incorporados e é suficiente para publicar a interface. Não exige Supabase ou compilação.
+## Publicação
 
-## Áreas para testar
+1. Faça um backup dos arquivos atuais do site.
+2. Extraia este ZIP e envie os arquivos da **raiz desta pasta** no repositório GitHub `FHumuarama/franchi-pedidos` ou publique manualmente no Netlify. Se usar deploy manual no Netlify, escolha a pasta que contém `public/index.html`, `public/app.js`, `public/style.css`, `netlify.toml`.
+3. Se o Netlify usa GitHub, confirme que o projeto está vinculado ao repositório e à branch principal. Publish directory: `public`; build command: vazio.
+4. Não é necessário reexecutar a migração SQL se o Supabase já tiver sido atualizado nesta conversa. A função administrativa `admin-lojas` também já foi implantada no projeto Supabase `weaddoldbgxoxljkjaty`.
 
-- Visão geral da plataforma
-- Administrador geral: empresas fictícias e planos
-- Painel de empresa: pedidos demonstrativos, status e produtos
-- Catálogo: pedidos sem cadastro (simulados neste navegador)
-- Assinaturas: planos e trocas fictícias
+## Endereços
 
-**Aviso:** não há login real, backend, banco de dados compartilhado, cobrança ou notificações automáticas pelo WhatsApp. A funcionalidade de pedidos é local ao navegador. NÃO usar com clientes reais nem inserir dados pessoais verdadeiros.
+- `/`: seleção de lojas públicas.
+- `/loja/slug-da-empresa`: catálogo exclusivo, sem cadastro.
+- `/gestor`: login com e-mail e senha (acesso via link discreto no rodapé).
+- `/administracao`: caminho alternativo para login administrativo. O mesmo login identifica o perfil.
 
-## Publicar com GitHub e Netlify pelo celular
+## Perfis
 
-1. No GitHub, entre em `FHumuarama/franchi-pedidos` e envie os arquivos desta pasta para a **raiz do repositório na branch `main`**. Em `Add file > Upload files`, selecione `index.html`, `netlify.toml`, `robots.txt` e `README.md` (o `.gitignore` é opcional se o navegador ocultar arquivos com ponto).
-2. Entre no projeto **franchi-pedidos** já existente no Netlify.
-3. Acesse **Project configuration > Developer settings > Continuous deployment > Repository** e toque em **Link repository**, se ainda não estiver vinculado.
-4. Selecione o GitHub e o repositório `FHumuarama/franchi-pedidos`, branch **main**.
-5. Configure o campo **Build command** como vazio, **Publish directory** como `.` (raiz), e conclua a conexão.
-6. Confira o deploy na aba **Deploys**. Quando estiver como **Published/Ready**, abra `https://franchi-pedidos.netlify.app`.
-7. Daí em diante, alterações salvas (commits) na branch `main` acionam publicações automáticas no Netlify, quando o vínculo Git estiver ativo.
+- Cliente: escolhe loja, produtos, quantidades, entrega/retirada, pagamento e confirma. O pedido é persistido na tabela `orders` pela função segura `create_customer_order`. Depois de confirmar, o cliente pode clicar para abrir o WhatsApp da loja com uma cópia da compra. O navegador **não pode enviar mensagens de WhatsApp automaticamente** sem uma API oficial e suas credenciais; a pessoa deve apertar Enviar no WhatsApp.
+- Gestor: autenticação Supabase, pedidos da própria loja e atualização de status, categorias, cadastro/edição/exclusão de produtos, upload de foto (máximo 5 MB), descrição, preço e disponibilidade, WhatsApp, endereço, taxa de entrega, loja aberta/fechada.
+- Administrador geral: autenticado, autorizado via tabela `platform_admins`, cadastra empresas, logins e senhas por função Edge segura `admin-lojas`, gera o link único da loja e edita nome/endereço/WhatsApp/publicação.
 
-Se aparecer opção **Manage repository**, o site pode já estar vinculado a um repositório. Confirme qual está ligado, evitando troca involuntária.
+## Limitações desta versão
 
-## Abrir localmente
+- O link de WhatsApp abre a conversa com mensagem preenchida, mas não faz envio automático invisível.
+- O catálogo permite itens simples; para produtos que exigem grupos de adicionais obrigatórios, a seleção de opções ainda precisa ser implementada na interface.
+- Não há recuperação automática de senha no painel; o administrador configura a senha inicial da empresa.
+- Os pedidos usam atualização automática de 20 em 20 segundos enquanto a aba Pedidos está aberta.
+- Nenhuma assinatura ou cobrança real foi ativada.
+- O cadastro inicial do administrador deve existir previamente no Supabase Auth e na tabela `platform_admins`; não existe senha padrão no código.
 
-Basta abrir `index.html` pelo navegador; se o Android não executar JavaScript em arquivos locais, publique pelo Netlify para testar via HTTPS.
+## Segurança
 
-## Organização dos arquivos
+- Chave de frontend Supabase é publicável. Nenhuma chave `service_role` está no HTML.
+- O cadastro de usuários ocorre exclusivamente em função Edge com autenticação administrativa.
+- Leitura e escrita nas tabelas são controladas por RLS no Supabase.
+- Senhas reais são geridas pelo Supabase Auth, não são armazenadas no navegador nem em `localStorage`.
 
-- `index.html`: demo interativa completa (CSS, JS e logo embutidos)
-- `netlify.toml`: publicação estática e cabeçalhos de segurança
-- `robots.txt`: não indexar esta demonstração nos mecanismos de busca
-- `README.md`: estas instruções
-- `.gitignore`: impede enviar credenciais e pasta local do Netlify
+## Arquivos
 
-A configuração de não indexação apenas pede aos mecanismos de busca que não indexem o site; **não restringe acesso público**. Se precisar manter esta demo privada, configure controle de acesso no Netlify.
+- `public/index.html`: estrutura de páginas.
+- `public/style.css`: identidade visual responsiva.
+- `public/app.js`: navegação e operações com Supabase.
+- `netlify.toml`: configuração de publicação e URLs.
+- `supabase/functions/admin-lojas/index.ts`: código-fonte da função de administração já implantada.
+- `supabase/migrations/...sql`: migração de armazenamento e permissões já aplicada neste projeto.
+
+Antes de abrir a operação comercial, teste login administrativo, criação de empresa, acesso com login da loja, upload de imagem e pedido real de ponta a ponta com um aparelho de cliente e outro de gestor.
